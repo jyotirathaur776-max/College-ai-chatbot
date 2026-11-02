@@ -1,0 +1,55 @@
+import tkinter as tk
+from tkinter import scrolledtext
+import random
+import datetime
+
+INTENTS = {
+    "greeting": {"keywords": ["hi", "hello", "hey"], "responses": ["Hello! Welcome to College Inquiry Bot", "Hi! Kaise madad karu?"]},
+    "admission": {"keywords": ["admission", "bca", "btech"], "responses": ["Admission open hai! Last date 30th July hai."]},
+    "fees": {"keywords": ["fees", "fee"], "responses": ["BCA Fee: 45k/year\nB.Tech Fee: 80k/year"]},
+    "courses": {"keywords": ["course", "branch"], "responses": ["Courses: BCA, B.Tech CSE, BBA, MBA"]},
+    "timing": {"keywords": ["time", "timing"], "responses": ["College Timing: 9 AM to 4 PM"]},
+    "contact": {"keywords": ["contact", "phone"], "responses": ["Contact: 98765-43210\nLucknow, UP"]},
+}
+
+class CollegeChatbot:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("AI Chatbot - College Mini Project")
+        self.root.geometry("500x600")
+        self.root.configure(bg="#0f172a")
+        title = tk.Label(root, text="College Inquiry AI Chatbot", font=("Arial", 16, "bold"), bg="#0f172a", fg="white")
+        title.pack(pady=10)
+        self.chat_area = scrolledtext.ScrolledText(root, wrap=tk.WORD, width=60, height=25, font=("Arial", 11), bg="#1e293b", fg="white")
+        self.chat_area.pack(padx=10, pady=5)
+        self.chat_area.insert(tk.END, "Bot: Namaste! Main aapka College Assistant hu.\n")
+        self.chat_area.configure(state='disabled')
+        bottom = tk.Frame(root, bg="#0f172a")
+        bottom.pack(pady=10, fill=tk.X, padx=10)
+        self.entry = tk.Entry(bottom, font=("Arial", 12), width=35)
+        self.entry.pack(side=tk.LEFT, padx=5, ipady=6)
+        self.entry.bind("<Return>", self.send)
+        btn = tk.Button(bottom, text="Send", command=self.send, bg="#22c55e", fg="white", font=("Arial", 11, "bold"), padx=15)
+        btn.pack(side=tk.LEFT)
+    def get_ai_response(self, user_msg):
+        user_msg = user_msg.lower()
+        for intent, data in INTENTS.items():
+            for keyword in data["keywords"]:
+                if keyword in user_msg:
+                    return random.choice(data["responses"])
+        return "Sorry, samajh nahi aaya. Aap puch sakte ho: admission, fees, courses, timing, contact"
+    def send(self, event=None):
+        user_text = self.entry.get().strip()
+        if user_text == "": return
+        self.chat_area.configure(state='normal')
+        self.chat_area.insert(tk.END, f"You: {user_text}\n")
+        bot_reply = self.get_ai_response(user_text)
+        self.chat_area.insert(tk.END, f"Bot: {bot_reply}\n\n")
+        self.chat_area.configure(state='disabled')
+        self.chat_area.yview(tk.END)
+        self.entry.delete(0, tk.END)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = CollegeChatbot(root)
+    root.mainloop()
